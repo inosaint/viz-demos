@@ -1,5 +1,10 @@
 import * as THREE from 'three';
 import { gsap } from 'gsap';
+
+// X/Twitter in-app browser overlays its toolbar on the viewport; bump nav up
+if (/Twitter/i.test(navigator.userAgent)) {
+  document.documentElement.classList.add('ua-twitter');
+}
 import { PD, STOP_PLANET, STOP_SIDE } from './data.js';
 import { renderer, scene, camera, lookAt, planets, saturnRings, coronaMeshes, ellipsePos } from './scene.js';
 import { STOP_IMAGES } from './images.js';

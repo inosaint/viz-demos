@@ -257,6 +257,7 @@ body {
   }
 
   #nav { bottom: max(18px, calc(10px + env(safe-area-inset-bottom))); z-index: 25; }
+  .ua-twitter #nav { bottom: 96px; }
   #nav button.restart { font-size: 0.58rem; width: 118px; }
 }
 
