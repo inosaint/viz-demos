@@ -1,0 +1,222 @@
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  overflow: hidden;
+}
+
+body {
+  background: #00000a;
+  color: oklch(0.97 0.005 260);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+#bg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ─── Arrow navigation ───────────────────────────────────────────────────────── */
+#nav {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto;
+  z-index: 20;
+}
+#nav button {
+  background: none;
+  border: 1px solid oklch(0.97 0.005 260 / 0.18);
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  color: oklch(0.97 0.005 260 / 0.55);
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  line-height: 1;
+}
+#nav button:hover:not(:disabled) {
+  color: oklch(0.97 0.005 260);
+  border-color: oklch(0.97 0.005 260 / 0.45);
+  background: oklch(0.97 0.005 260 / 0.06);
+}
+#nav button:disabled { opacity: 0.18; cursor: default; }
+
+/* Overlays */
+#overlays {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+.text-panel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+}
+/* Split-screen positioning: card pushed to left or right half */
+.text-panel.card-left  { justify-content: flex-start; padding-left:  max(5vw, 28px); }
+.text-panel.card-right { justify-content: flex-end;   padding-right: max(5vw, 28px); }
+
+/* Intro */
+.intro-card { text-align: center; padding: 0 24px; }
+.intro-card .eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 1.2rem;
+}
+.intro-card h1 {
+  font-size: clamp(4rem, 14vw, 10rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  text-shadow: 0 0 80px rgba(255,200,60,.4), 0 0 160px rgba(255,140,20,.2);
+}
+.intro-card .sub {
+  margin-top: 1.2rem;
+  font-size: clamp(0.9rem, 2.2vw, 1.2rem);
+  color: rgba(255,255,255,.42);
+  line-height: 1.65;
+}
+.intro-card .hint {
+  display: block;
+  margin-top: 2.5rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: oklch(0.97 0.005 260 / 0.28);
+  animation: nudge 2.4s ease-in-out infinite;
+}
+@keyframes nudge {
+  0%,100% { transform: translateX(0); }
+  50%      { transform: translateX(7px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .intro-card .hint { animation: none; }
+}
+
+/* Image gallery inside quote card */
+.img-gallery {
+  display: flex;
+  gap: 4px;
+  margin: 14px 0 20px;
+}
+.img-gallery img {
+  flex: 1;
+  width: 0;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 1px;
+  background: oklch(0.11 0.008 262);
+  opacity: 0.85;
+}
+
+/* Quote card — narrower so the planet fills the other half */
+.quote-card {
+  max-width: 440px;
+  width: min(440px, calc(46vw - 32px));
+  /* Asymmetric padding: tighter top (name anchors the eye), generous bottom */
+  padding: 22px 30px 34px;
+  /* Per-planet tint: each card breathes in its planet's color at low chroma */
+  background: color-mix(in oklch, var(--accent, oklch(0.6 0.08 260)) 7%, oklch(0.044 0.012 262 / 0.88));
+  /* Full border tinted to the accent — no side stripe */
+  border: 1px solid color-mix(in oklch, var(--accent, oklch(0.6 0.08 260)) 28%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+.quote-card h2 {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.44em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0;
+}
+.quote-card p {
+  font-family: 'Spectral', Georgia, serif;
+  font-size: 1rem;
+  font-style: italic;
+  line-height: 1.82;
+  color: oklch(0.87 0.007 262);
+}
+
+/* ─── Mobile: planet fills screen, card peeks 20% from bottom ─────────────── */
+@media (max-width: 680px) {
+  .text-panel.card-left,
+  .text-panel.card-right {
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+  }
+
+  /* Card peeks 20vh from bottom; GSAP owns the y transform */
+  .quote-card {
+    max-width: 100%;
+    width: 100%;
+    border-radius: 20px 20px 0 0;
+    padding: 10px 24px 88px;
+    pointer-events: auto;
+    cursor: pointer;
+    max-height: 88vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Disable backdrop-filter on mobile — conflicts with GSAP transform on iOS Safari */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: color-mix(in oklch, var(--accent, oklch(0.6 0.08 260)) 10%, oklch(0.044 0.012 262 / 0.97));
+  }
+
+  /* Drag handle */
+  .quote-card::before {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 3px;
+    border-radius: 2px;
+    background: oklch(0.97 0.005 260 / 0.2);
+    margin: 0 auto 14px;
+  }
+
+  .quote-card.expanded { cursor: auto; }
+
+  /* Tap-to-open hint on planet name */
+  .quote-card:not(.expanded) h2::after {
+    content: ' ↑';
+    font-size: 0.5rem;
+    letter-spacing: 0;
+    opacity: 0.35;
+    vertical-align: middle;
+  }
+
+  /* Backdrop dims the planet area when card is open */
+  #card-backdrop {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: oklch(0 0 0 / 0.4);
+    pointer-events: none;
+  }
+  #card-backdrop.visible {
+    display: block;
+    pointer-events: auto;
+  }
+
+  #nav { bottom: 18px; z-index: 25; }
+}
+

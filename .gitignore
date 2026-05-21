@@ -1,0 +1,4 @@
+node_modules/
+dist/
+.herenow/
+.claude/worktrees/
