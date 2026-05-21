@@ -177,11 +177,11 @@ document.querySelectorAll('.quote-card').forEach(card => {
     if (window.innerWidth >= 680) return;
     const dy = e.changedTouches[0].clientY - _cardTouchY;
     if (card.classList.contains('expanded')) {
-      // Swipe down → close
-      if (dy > 52) closeCards();
+      // Tap or swipe down → close
+      if (Math.abs(dy) < 20 || dy > 52) { e.preventDefault(); closeCards(); }
     } else {
-      // Tap (small movement) → open
-      if (Math.abs(dy) < 20) { e.preventDefault(); openCard(card); }
+      // Tap or swipe up → open
+      if (Math.abs(dy) < 20 || dy < -30) { e.preventDefault(); openCard(card); }
     }
   }, { passive: false });
 });
