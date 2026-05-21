@@ -47,10 +47,12 @@ function activateStop(idx) {
   trackIdx = null;
   panAngle = 0;
 
-  // Hide all panels; the new one fades in after the camera arrives
-  document.querySelectorAll('.text-panel').forEach(p =>
-    gsap.to(p, { opacity: 0, duration: 0.25, overwrite: true })
-  );
+  // Hide all panels; mark only the new one active (controls pointer-events on mobile)
+  document.querySelectorAll('.text-panel').forEach(p => {
+    gsap.to(p, { opacity: 0, duration: 0.25, overwrite: true });
+    p.classList.remove('active');
+  });
+  document.getElementById(`tp-${idx}`)?.classList.add('active');
 
   const sp   = STOP_PLANET[idx];
   const side = STOP_SIDE[idx];
@@ -107,7 +109,10 @@ const navNext = document.getElementById('nav-next');
 
 function updateNav() {
   navPrev.disabled = activeStop === 0;
-  navNext.disabled = activeStop === TOTAL_STOPS - 1;
+  navNext.disabled = false;
+  const atEnd = activeStop === TOTAL_STOPS - 1;
+  navNext.textContent = atEnd ? 'back to start' : '→';
+  navNext.classList.toggle('restart', atEnd);
 }
 
 function goTo(idx) {
@@ -118,12 +123,14 @@ function goTo(idx) {
   updateNav();
 }
 
+function nextStop() { goTo(activeStop === TOTAL_STOPS - 1 ? 0 : activeStop + 1); }
+
 navPrev.addEventListener('click', () => { if (activeStop > 0) goTo(activeStop - 1); });
-navNext.addEventListener('click', () => { if (activeStop < TOTAL_STOPS - 1) goTo(activeStop + 1); });
+navNext.addEventListener('click', nextStop);
 
 window.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
-    e.preventDefault(); if (activeStop < TOTAL_STOPS - 1) goTo(activeStop + 1);
+    e.preventDefault(); nextStop();
   } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
     e.preventDefault(); if (activeStop > 0) goTo(activeStop - 1);
   }
@@ -175,11 +182,11 @@ document.querySelectorAll('.quote-card').forEach(card => {
     if (window.innerWidth >= 680) return;
     const dy = e.changedTouches[0].clientY - _cardTouchY;
     if (card.classList.contains('expanded')) {
-      // Swipe down → close
-      if (dy > 52) closeCards();
+      // Tap or swipe down → close
+      if (Math.abs(dy) < 20 || dy > 52) { e.preventDefault(); closeCards(); }
     } else {
-      // Tap (small movement) → open
-      if (Math.abs(dy) < 20) { e.preventDefault(); openCard(card); }
+      // Tap or swipe up → open
+      if (Math.abs(dy) < 20 || dy < -30) { e.preventDefault(); openCard(card); }
     }
   }, { passive: false });
 });
@@ -193,7 +200,7 @@ window.addEventListener('touchend', e => {
   if (_touchTarget?.closest?.('.quote-card.expanded')) return;
   const dx = e.changedTouches[0].clientX - _touchX;
   if (Math.abs(dx) < 60) return;
-  if (dx < 0 && activeStop < TOTAL_STOPS - 1) goTo(activeStop + 1);
+  if (dx < 0) nextStop();
   else if (dx > 0 && activeStop > 0) goTo(activeStop - 1);
 }, { passive: true });
 

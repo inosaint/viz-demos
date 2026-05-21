@@ -23,9 +23,10 @@ body {
 /* ─── Arrow navigation ───────────────────────────────────────────────────────── */
 #nav {
   position: absolute;
-  bottom: 32px;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: max(32px, calc(16px + env(safe-area-inset-bottom)));
+  /* Anchor at nav's initial left edge so navNext expands rightward.
+     46px = half of initial nav width (42 + 8 + 42) / 2 */
+  left: calc(50% - 46px);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -43,7 +44,11 @@ body {
   color: oklch(0.97 0.005 260 / 0.55);
   font-size: 1.15rem;
   cursor: pointer;
-  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  overflow: hidden;
+  transition: color 0.2s, border-color 0.2s, background 0.2s,
+              width 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              border-radius 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              padding 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   line-height: 1;
 }
 #nav button:hover:not(:disabled) {
@@ -52,6 +57,25 @@ body {
   background: oklch(0.97 0.005 260 / 0.06);
 }
 #nav button:disabled { opacity: 0.18; cursor: default; }
+@keyframes restart-text-in {
+  0%   { color: transparent; }
+  100% { color: oklch(0.97 0.005 260 / 0.55); }
+}
+#nav button.restart {
+  width: 136px;
+  padding: 0 18px;
+  border-radius: 21px;
+  font-size: 0.68rem;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  animation: restart-text-in 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  /* animation owns color during expansion; drop color from transition so hover is instant */
+  transition: border-color 0.2s, background 0.2s,
+              width 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              border-radius 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              padding 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
 /* Overlays */
 #overlays {
@@ -104,12 +128,25 @@ body {
   animation: nudge 2.4s ease-in-out infinite;
 }
 @keyframes nudge {
-  0%,100% { transform: translateX(0); }
-  50%      { transform: translateX(7px); }
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(6px); }
 }
 @media (prefers-reduced-motion: reduce) {
   .intro-card .hint { animation: none; }
 }
+
+/* Per-planet accent colors */
+.card-sun     { --accent: #ffd060; }
+.card-mercury { --accent: #b0b0b0; }
+.card-venus   { --accent: #e8b860; }
+.card-earth   { --accent: #5aabe8; }
+.card-mars    { --accent: #e85530; }
+.card-belt    { --accent: #a0a0a0; }
+.card-jupiter { --accent: #d09040; }
+.card-saturn  { --accent: #e0c858; }
+.card-uranus  { --accent: #60d8e8; }
+.card-neptune { --accent: #3a7bd5; }
+.card-pluto   { --accent: #a89080; }
 
 /* Image gallery inside quote card */
 .img-gallery {
@@ -171,7 +208,7 @@ body {
     width: 100%;
     border-radius: 20px 20px 0 0;
     padding: 10px 24px 88px;
-    pointer-events: auto;
+    pointer-events: none;
     cursor: pointer;
     max-height: 88vh;
     overflow-y: auto;
@@ -192,6 +229,8 @@ body {
     background: oklch(0.97 0.005 260 / 0.2);
     margin: 0 auto 14px;
   }
+
+  .text-panel.active .quote-card { pointer-events: auto; }
 
   .quote-card.expanded { cursor: auto; }
 
@@ -217,6 +256,7 @@ body {
     pointer-events: auto;
   }
 
-  #nav { bottom: 18px; z-index: 25; }
+  #nav { bottom: max(18px, calc(10px + env(safe-area-inset-bottom))); z-index: 25; }
+  #nav button.restart { font-size: 0.58rem; width: 118px; }
 }
 

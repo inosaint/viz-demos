@@ -19,13 +19,22 @@ export const lookAt = { x: 82, y: 0, z: 71 };
 scene.add(new THREE.PointLight(0xfff5e0, 4, 0, 0));
 scene.add(new THREE.AmbientLight(0x202245, 0.25));
 
+// ─── Shared round sprite for Points (avoids default square quads) ─────────────
+const _circleSprite = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 16;
+  const g = c.getContext('2d');
+  g.beginPath(); g.arc(8, 8, 7, 0, Math.PI * 2);
+  g.fillStyle = '#fff'; g.fill();
+  return new THREE.CanvasTexture(c);
+})();
+
 // ─── Stars ────────────────────────────────────────────────────────────────────
 {
   const n = 12000, pos = new Float32Array(n * 3);
   for (let i = 0; i < n * 3; i++) pos[i] = (Math.random() - 0.5) * 3000;
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  scene.add(new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.45 })));
+  scene.add(new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.45, map: _circleSprite, transparent: true, alphaTest: 0.5 })));
 }
 
 // ─── Orbit math ───────────────────────────────────────────────────────────────
@@ -79,7 +88,7 @@ PD.filter(p => p.a > 0).forEach(({ a, e, omega }) => scene.add(makeOrbitLine(a, 
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  scene.add(new THREE.Points(geo, new THREE.PointsMaterial({ color: 0x888888, size: 0.18 })));
+  scene.add(new THREE.Points(geo, new THREE.PointsMaterial({ color: 0x888888, size: 0.18, map: _circleSprite, transparent: true, alphaTest: 0.5 })));
 }
 
 // ─── Sun corona (for sun r=10) ────────────────────────────────────────────────
