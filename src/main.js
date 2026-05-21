@@ -47,10 +47,12 @@ function activateStop(idx) {
   trackIdx = null;
   panAngle = 0;
 
-  // Hide all panels; the new one fades in after the camera arrives
-  document.querySelectorAll('.text-panel').forEach(p =>
-    gsap.to(p, { opacity: 0, duration: 0.25, overwrite: true })
-  );
+  // Hide all panels; mark only the new one active (controls pointer-events on mobile)
+  document.querySelectorAll('.text-panel').forEach(p => {
+    gsap.to(p, { opacity: 0, duration: 0.25, overwrite: true });
+    p.classList.remove('active');
+  });
+  document.getElementById(`tp-${idx}`)?.classList.add('active');
 
   const sp   = STOP_PLANET[idx];
   const side = STOP_SIDE[idx];

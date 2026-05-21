@@ -111,6 +111,19 @@ body {
   .intro-card .hint { animation: none; }
 }
 
+/* Per-planet accent colors */
+.card-sun     { --accent: #ffd060; }
+.card-mercury { --accent: #b0b0b0; }
+.card-venus   { --accent: #e8b860; }
+.card-earth   { --accent: #5aabe8; }
+.card-mars    { --accent: #e85530; }
+.card-belt    { --accent: #a0a0a0; }
+.card-jupiter { --accent: #d09040; }
+.card-saturn  { --accent: #e0c858; }
+.card-uranus  { --accent: #60d8e8; }
+.card-neptune { --accent: #3a7bd5; }
+.card-pluto   { --accent: #a89080; }
+
 /* Image gallery inside quote card */
 .img-gallery {
   display: flex;
@@ -171,7 +184,7 @@ body {
     width: 100%;
     border-radius: 20px 20px 0 0;
     padding: 10px 24px 88px;
-    pointer-events: auto;
+    pointer-events: none;
     cursor: pointer;
     max-height: 88vh;
     overflow-y: auto;
@@ -192,6 +205,8 @@ body {
     background: oklch(0.97 0.005 260 / 0.2);
     margin: 0 auto 14px;
   }
+
+  .text-panel.active .quote-card { pointer-events: auto; }
 
   .quote-card.expanded { cursor: auto; }
 
