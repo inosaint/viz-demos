@@ -109,7 +109,10 @@ const navNext = document.getElementById('nav-next');
 
 function updateNav() {
   navPrev.disabled = activeStop === 0;
-  navNext.disabled = activeStop === TOTAL_STOPS - 1;
+  navNext.disabled = false;
+  const atEnd = activeStop === TOTAL_STOPS - 1;
+  navNext.textContent = atEnd ? 'back to start' : '→';
+  navNext.classList.toggle('restart', atEnd);
 }
 
 function goTo(idx) {
@@ -120,12 +123,14 @@ function goTo(idx) {
   updateNav();
 }
 
+function nextStop() { goTo(activeStop === TOTAL_STOPS - 1 ? 0 : activeStop + 1); }
+
 navPrev.addEventListener('click', () => { if (activeStop > 0) goTo(activeStop - 1); });
-navNext.addEventListener('click', () => { if (activeStop < TOTAL_STOPS - 1) goTo(activeStop + 1); });
+navNext.addEventListener('click', nextStop);
 
 window.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
-    e.preventDefault(); if (activeStop < TOTAL_STOPS - 1) goTo(activeStop + 1);
+    e.preventDefault(); nextStop();
   } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
     e.preventDefault(); if (activeStop > 0) goTo(activeStop - 1);
   }
@@ -195,7 +200,7 @@ window.addEventListener('touchend', e => {
   if (_touchTarget?.closest?.('.quote-card.expanded')) return;
   const dx = e.changedTouches[0].clientX - _touchX;
   if (Math.abs(dx) < 60) return;
-  if (dx < 0 && activeStop < TOTAL_STOPS - 1) goTo(activeStop + 1);
+  if (dx < 0) nextStop();
   else if (dx > 0 && activeStop > 0) goTo(activeStop - 1);
 }, { passive: true });
 
